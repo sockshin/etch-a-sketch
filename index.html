@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Etch a Sketch</title>
+</head>
+<body>
+    
+    <div class="wrapper">
+        <h1 class="etchText" id="etchTitle">Etch-a-Sketch</h1>
+
+        <section class="fullContainer">
+
+            <div class="leftContainer options">
+                
+               
+                <div class="theme boxes">
+                    <h4 class='themeHeader'>Theme</h4>
+                    <button onclick="changeTheme()" id="theme" class="choices">Dark</button>
+                </div>
+
+                <div class="gridBorder boxes">
+                    <h4>Borders</h4>
+                    <button onclick="toggleBorders()" id='borders' class='choices'>Off</button>
+                </div>
+
+                <div class="draw boxes">
+                    <h4 class='themeHeader'>Draw</h4>
+                    <button onclick="changeDrawType()" id="drawType" class="choices">Pixel</button>
+                </div>
+
+                <div class="liteBrightDiv boxes">
+                    <h4>Lite-brite</h4>
+                    <button onclick="liteBright()" id='liteBright' class='choices'>On</button>
+                </div>
+
+                <div class="reset boxes">
+                    <h2>Reset Grid</h2>
+                    <button onclick="resetGrid()" class='choices'>Reset</button>
+                </div>
+                
+                <div class="gridSize boxes">
+                    <h2 class='gridSizeHeader'>Grid Size</h2>
+                    <input type="range" min="2" max="40" value="16" id="gridSlider">
+                    <p class='gridSliderValue' id='gridSliderValue'>16 x 16</p>
+                </div>
+                
+                
+            </div>
+
+            <div class="rightContainer options">
+                <h1 class=colorOptions>Color Options</h1>
+                <input type="radio" name="colorChoiceGroup" id="black" onclick="colorChoice()"><label for="black" class="black choices">Black</label>
+                <input type="radio" name="colorChoiceGroup" id="white" onclick="colorChoice()"><label for="white" class="white choices">White</label>
+                <input type="radio" name="colorChoiceGroup" id="random"onclick="colorChoice()"><label for="random" class="random choices" id="rdm">Random</label>
+                <input type="radio" name="colorChoiceGroup" id="rgb" onclick="colorChoice()"><label for="rgb" class="rgb choices" id='rbg'>RGB</label>
+                <input type="radio" name="colorChoiceGroup" id="darker"onclick="colorChoice()"><label for="darker" class="darker choices">Darker</label>
+                <input type="radio" name="colorChoiceGroup" id="lighter"onclick="colorChoice()"><label for="lighter" class="lighter choices">Lighter</label>
+                <div class="rgbPicker">
+                    <input type="radio" name="colorChoiceGroup" id="custom"onclick="colorChoice()"><label for="custom" class="custom choices" id="idCustomRGB">Custom</label>
+                    <input type="range" min="0" max="255" value="161" class="redSlider" id='rSlider' disabled>
+                    <p class='rSliderValue' id='rSliderValue' >161</p>
+                    <input type="range" min="0" max="255" value="161" class="greenSlider" id='gSlider' disabled>
+                    <p class='gSliderValue' id='gSliderValue'>161</p>
+                    <input type="range" min="0" max="255" value="161" class="blueSlider" id='bSlider' disabled>
+                    <p class='bSliderValue' id='bSliderValue'>161</p>
+                </div>     
+            </div> 
+        <div class="container" id="container"></div>
+        </section> 
+    
+    </div>
+
+    
+</body>
+</html>
+
+<script>
+    let buttonCustomRGB = document.getElementById('idCustomRGB');
+    let bSlider = document.getElementById("bSlider");
+    let bSliderText = document.getElementById("bSliderValue");
+    let gSlider = document.getElementById("gSlider");
+    let gSliderText = document.getElementById("gSliderValue");
+    let rSlider = document.getElementById("rSlider");
+    let rSliderText = document.getElementById("rSliderValue");
+    let rdmBtnTextColor = document.getElementById('rdm');  
+    let divLiteBright = document.getElementById("liteBright");
+    let themeBtn = document.getElementById("theme"); 
+    let borderBtn = document.getElementById("borders");
+    let container = document.getElementById("container");
+    let etchHeader = document.getElementById("etchTitle");
+    let gridSizeSlider = document.getElementById("gridSlider");
+    let gridSizeText = document.getElementById("gridSliderValue");
+    let gridValue = 16; //default grid size on page load;
+    let gridBoxWidthHeightPercentage;
+    let squares;
+    let regExRGB = /\d+, \d+, \d+/; // REGULAR EXPRESSION FOR PULLING THE RGB VALUE FROM THE DIV
+    let change;
+    let rVal, gVal, bVal;
+    let rgbArray;
+    let nodes;
+    let currentDivNode;
+    let gridBoxWidth;
+    let customRed, customGreen, customBlue;
+    let dialCounter = 1;   
+    buildGrid(); //build the default grid
+  
+function resetGrid(){
+    for (let i = 0; i < squares; i++)
+    { 
+        let nodesToRemove = document.getElementById("container");        
+        nodesToRemove.querySelectorAll('div').forEach(divBox => divBox.remove());
+    }      
+    buildGrid();
+}
+
+function buildGrid(){
+    squares = gridValue * gridValue; //determine total boxes for grid
+    for (let i = 0; i < squares; i++)
+    {
+        //Determine the top right and bottom left of the grid to round the corner of box.
+        nodes = document.querySelectorAll('.etchGrid');
+        currentDivNode = nodes[nodes.length - 1]; 
+        if (((gridValue*gridValue)-gridValue+1) == (i))
+        {
+            currentDivNode.style.borderRadius = '0px 0px 0px 10px';
+        }
+        if (gridValue == (i))
+        {
+            currentDivNode.style.borderRadius = '0px 10px 0px 0px';
+        }
+
+        let newDiv = document.createElement("div"); // let has to be here because we need to create a new element per loop
+        newDiv.classList.add('etchGrid')
+        container.appendChild(newDiv);
+
+    }
+
+    gridBoxWidth = (600/gridValue) //width of the etch-a-sketch box divided by the amount squares per row
+    gridBoxWidthHeightPercentage = ((gridBoxWidth)/600) * 100; //box is always 600 pixels, make it a %
+    // ADD THE STYLE TO THE NEW DIVS SO THEY SHOW UP IN THE GRID
+    document.querySelectorAll('.etchGrid').forEach( (divElement) =>
+    {
+        divElement.style.width = `${gridBoxWidthHeightPercentage}%`;
+        divElement.style.height = `${gridBoxWidthHeightPercentage}%`;
+        // BUILD THE GRID IN THE DARK THEME OR LIGHT THEME
+        if (themeBtn.textContent == "Dark")
+        {
+            divElement.style.backgroundColor = `rgb(255,255,255)`;            
+        }
+        else
+        {
+            divElement.style.backgroundColor = `rgb(0,0,0)`;
+        }
+        // CHANGE BORDER STYLE ON EACH DIV ELEMENT WHEN BUILDING GRID
+        if (borderBtn.textContent == 'On')
+        {
+            divElement.style.border = "hidden";
+        }
+        else
+        {
+            divElement.style.border = "inherit";
+        }
+    }); //end of foreach loop for building the grid
+    
+    // CHANGE BUTTON LITE BRIGHT BUTTON TO WHEN REBUILDING THE GRID.
+    if (divLiteBright.textContent == "Off")
+    {
+        divLiteBright.textContent = "On";    
+    }
+    // ADD EVENT LISTENERS
+    etchaSketch();
+    pixelSketch();    
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// When the grid is created, etchaSketch & PixelSketch are called to make it it listen for mouseover (etch) events or mouse clicks (pixel)
+function etchaSketch(){
+    let fillingDivs = document.querySelectorAll('.etchGrid');
+    fillingDivs.forEach( (box) =>
+    {
+        box.addEventListener('mouseover', () =>
+        {
+            if (dialCounter == 1 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                lighter(box);                    
+            }                
+            else if (dialCounter == 2 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                black(box);
+            }
+            else if (dialCounter == 3 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                randomColors(box);
+            }
+            else if (dialCounter == 4 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                darker(box);
+            }
+            else if (dialCounter == 5 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                randomColor(box);
+            }
+            else if (dialCounter == 6 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                white(box);
+            }
+            else if (dialCounter == 7 && etchHeader.textContent == "Etch-a-Sketch")
+            {
+                customColor(box);
+            }
+        }); // add event listener close
+    }); // for each close
+} //function close
+
+function pixelSketch(){
+let fillingDivs = document.querySelectorAll('.etchGrid');
+fillingDivs.forEach( (box) => {
+    box.addEventListener('click', () =>
+        {
+            if (dialCounter == 1 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                lighter(box);                    
+            }                
+            else if (dialCounter == 2 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                black(box);
+            }
+            else if (dialCounter == 3 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                randomColors(box);
+            }
+            else if (dialCounter == 4 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                darker(box);
+            }
+            else if (dialCounter == 5 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                randomColor(box);
+            }
+            else if (dialCounter == 6 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                white(box);
+            }
+            else if (dialCounter == 7 && etchHeader.textContent == "Pix-el-Sketch")
+            {
+                customColor(box);
+            }
+        }); // addEventListener close
+    }); // forEach close
+} //function close
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// FUNCTIONS FOR EACH EVENT LISTENER, SO IT KNOWS WHAT COLOR TO SET THE DIV TO
+function black(box){
+    box.style.background = 'rgb(0,0,0)';
+}
+
+function lighter(box){
+    change = (box.style.backgroundColor.match(regExRGB))
+    rgbArray = change.toString().split(", ")
+    rVal = parseInt(rgbArray[0]) + 26;
+    gVal = parseInt(rgbArray[1]) + 26;
+    bVal = parseInt(rgbArray[2]) + 26;
+    box.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`
+}
+
+function randomColors(box){
+    rVal = (Math.floor(Math.random() * 255))
+    gVal =(Math.floor(Math.random() * 255))
+    bVal = (Math.floor(Math.random() * 255))                
+    box.style.background = `rgb(${rVal},${gVal},${bVal}`;
+}
+
+function darker(box){
+    change = (box.style.backgroundColor.match(regExRGB))
+    rgbArray = change.toString().split(", ")
+    rVal = rgbArray[0] -26
+    gVal = rgbArray[1] - 26
+    bVal = rgbArray[2] -26
+    box.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`
+}
+
+function randomColor(box){
+    box.style.background = `rgb(${rVal}, ${gVal}, ${bVal})` // THE RGB VALUES HERE ARE CREATED ONCE WHEN THE BUTTON IS SELECTED
+}
+
+function white(box){
+    box.style.background = 'rgb(255,255,255)';
+}
+
+function customColor(box){
+    box.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`; // THE RGB VALUES HERE ARE ALTERED IN THE SLIDER FUNCTIONS
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// WHEN THEME BUTTON IS PRESSED, CHANGE THE BUTTON CONTENT THEN CALL FUNCTION TO CHANGE BOX COLOR
+function changeTheme(){
+    let elem = document.getElementById("theme");
+    if (elem.textContent=="Dark")
+    {
+        elem.textContent = "Light";
+        elem.style.backgroundColor = "rgb(100,100,100)";
+        elem.style.color = "rgb(255,255,255)";
+    }
+    else
+    {
+        elem.textContent = "Dark";
+        elem.style.backgroundColor = "rgb(161,161,161)";
+        elem.style.color = "rgb(0,0,0)";
+    }
+    changeThemeFunc();
+}
+
+function changeThemeFunc(){             
+    document.querySelectorAll('.etchGrid').forEach( (divElement) =>
+    {
+        if (divElement.style.backgroundColor == 'rgb(255, 255, 255)')
+        {
+            divElement.style.backgroundColor = `rgb(0,0,0)`;
+        }
+        else if (divElement.style.backgroundColor == 'rgb(0, 0, 0)')
+        {
+            divElement.style.backgroundColor = `rgb(255,255,255)`;
+        }
+    });
+}
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// SLIDER INPUT FUNCTIONS
+// UPDATE THE GRID SIZE AND REBUILD THE GRID 
+gridSizeSlider.oninput = function(){
+    gridValue = (this.value);
+    gridSizeText.textContent = `${gridValue} x ${gridValue}`;
+    resetGrid();
+} 
+//RGB SLIDERS, SET rVal, gVal and bVal FOR NAMING CONTINUITY IN OTHER FUNCTIONS
+// RED SLIDER FOR CUSTOM COLOR
+rSlider.oninput = function(){
+    customRed = this.value;
+    rSliderText.textContent = customRed;
+    rVal = customRed;
+    buttonCustomRGB.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`;
+}
+// GREEN SLIDER FOR CUSTOM COLOR
+gSlider.oninput = function(){
+    customGreen = this.value;
+    gSliderText.textContent = customGreen;
+    gVal = customGreen;
+    buttonCustomRGB.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`;
+}
+// BLUE SLIDER FOR CUSTOM COLOR
+bSlider.oninput = function(){
+    customBlue = this.value;
+    bSliderText.textContent = customBlue;
+    bVal = customBlue;
+    buttonCustomRGB.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`;
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// BORDERS - CHANGE THEIR STYLE AND THE TEXT CONTENT OF THE BUTTON
+function toggleBorders(){
+    let borderBtn = document.getElementById("borders");
+    if (borderBtn.textContent == "On")
+    {
+        borderBtn.textContent = "Off";
+        changeBorders();
+    }
+    else
+    {
+        borderBtn.textContent = "On";
+        changeBorders();
+    }
+}
+
+function changeBorders(){    
+    document.querySelectorAll('.etchGrid').forEach( (boxBorder) =>
+    {
+        if (boxBorder.style.border != "inherit") // each box as the same border as the container that holds them, this is why inherit works
+        {
+            boxBorder.style.border = "inherit";
+        }
+        else
+        {
+            boxBorder.style.border = "hidden";
+        }
+    });
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// LITE BRIGHT FUNCTIONS, CHANGE THE TEXT AND THE INSET SHADOWS
+function liteBright(){
+    let divLiteBright = document.getElementById("liteBright");
+    if (divLiteBright.textContent == "On")
+    {
+        divLiteBright.textContent = "Off";
+        changeLiteBright();
+    }
+    else
+    {
+        divLiteBright.textContent = "On";
+        changeLiteBright();
+    }
+
+}
+
+function changeLiteBright(){
+    let shadowBlur = Math.round(gridBoxWidth/4.5); // DYNAMICALLY CHANGE SIZE/BLUR OF SHADOW BASED ON SIZE OF BOX 
+    let shadowSize = Math.round(shadowBlur / 4);    
+    document.querySelectorAll('.etchGrid').forEach( (divBoxShadow) =>
+    {
+        if (divBoxShadow.style.boxShadow != `rgba(10, 10, 10, 0.9) 0px 0px ${shadowBlur}px ${shadowSize}px inset`)
+        {
+            divBoxShadow.style.boxShadow = ` rgba(10, 10, 10, 0.9) 0px 0px ${shadowBlur}px ${shadowSize}px inset`
+        }
+        else
+        {
+            divBoxShadow.style.boxShadow = " rgb(255, 255, 255) 0 0 0 0 inset"  
+        }
+    });
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+//CHANGE THE TEXT IN THE BUTTON AND THE HEADER, HEADER TEXT DETERMINES WHICH EVENT LISTENER IS ACTIVE CLICK OR MOUSEOVER
+function changeDrawType(){
+    let drawBtnText = document.getElementById("drawType");
+        if (etchHeader.textContent == "Etch-a-Sketch")
+        {
+            etchHeader.textContent = "Pix-el-Sketch"
+            drawBtnText.textContent = "Etch"    
+        }
+        else
+        {
+            etchHeader.textContent = "Etch-a-Sketch"            
+            drawBtnText.textContent = "Pixel"
+        }
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------//
+// Function is ran when a Color Choice button is pressed and sets the variable for the event listener to know which color to set the div to
+function colorChoice(){
+  
+    if (document.getElementById('lighter').checked)
+    {
+        dialCounter = 1;
+    }
+    else if (document.getElementById('black').checked)
+    {
+        dialCounter = 2;
+    }
+    else if (document.getElementById('rgb').checked)
+    {
+        dialCounter = 3;
+    }
+    else if (document.getElementById('darker').checked)
+    {
+        dialCounter = 4;
+    }
+    else if (document.getElementById('random').checked)
+    {   
+        rVal = (Math.floor(Math.random() * 255))
+        gVal =(Math.floor(Math.random() * 255))
+        bVal = (Math.floor(Math.random() * 255)) 
+        rdmBtnTextColor.style.color=`rgb(${rVal}, ${gVal}, ${bVal})`
+        dialCounter = 5;
+    }
+    else if (document.getElementById('white').checked)
+    {
+        dialCounter = 6;
+    }
+    else if (document.getElementById('custom').checked)
+    {
+        dialCounter = 7;
+        rSlider.disabled = false; 
+        gSlider.disabled = false; 
+        bSlider.disabled = false;
+        rVal = rSlider.value;
+        gVal = gSlider.value;
+        bVal = bSlider.value;
+        buttonCustomRGB.style.background = `rgb(${rVal}, ${gVal}, ${bVal})`;
+    }
+    // THESE STATEMENTS SET THE COLORS BACK TO DEFAULT WHEN THEIR BUTTON ISNT SELECTED
+    if (dialCounter != 5)
+    {  
+        rdmBtnTextColor.style.color=`rgb(0, 0, 0)`;
+    }
+    if (dialCounter != 7)
+    {
+        buttonCustomRGB.style.background = `rgb(161, 161, 161)`;
+        rSlider.disabled = true; 
+        gSlider.disabled = true; 
+        bSlider.disabled = true; 
+    }
+}
+
+</script>

@@ -1,0 +1,379 @@
+
+html{
+    box-sizing: border-box;
+}
+/* widest adaption of bix sizing, allows border-box to work properly */
+*, *:before, *:after {
+    box-sizing: inherit;
+  }
+
+body{
+    margin: 100px 300px;
+    background: rgb(163, 163, 163);
+}
+
+.wrapper{
+    display: grid;
+    grid-gap: 30px;
+
+}
+
+/*Page Header*/
+.etchText{
+    font-size: 3rem;
+    margin:0px;
+    text-align: center;
+    font-style: italic;
+    font-weight: bolder;
+    text-shadow: 2px 2px #8f8f8f;
+}
+
+/* holds the two options and the drawing grid*/
+.fullContainer{
+    
+    display: grid;
+    grid-gap: 40px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: 
+    "leftContainer container rightContainer";
+}
+
+/*Each container left and right of the drawing grid*/
+.options{
+    border:2px solid rgb(148, 148, 148); 
+    box-shadow: 0 0 0px 10px rgba(59, 59, 59, 0.8), 0 0 1px 8px rgba(255, 255, 255, 0.9);  
+    border-radius: 10px;
+    padding: 20px;
+
+}
+
+.leftContainer{
+    max-height: 600px;
+    min-width: 313px;
+    grid-area: leftContainer;
+    background-color: gray;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 30px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    grid-template-areas:
+    "theme draw"
+    "gridBorder liteBrightDiv" 
+    "reset reset"
+    "gridSize gridSize";
+   
+}
+/* The grid boxes within the left container and the button choices within each box*/
+.boxes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px #8f8f8f;
+    color: black;
+    margin-bottom: 20px;
+    
+
+}
+
+/* the button styling*/
+.choices{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-shadow: 2px 2px #8f8f8f;
+    background-color: rgb(161, 161, 161);
+    color:black;
+    cursor: pointer;
+    border:2px solid rgb(148, 148, 148); 
+    box-shadow: 0 0 0px 5px rgba(59, 59, 59, 0.8), 0 0 1px 4px rgba(255, 255, 255, 0.9);  
+    border-radius: 5px;
+}
+
+/* match left buttons to right options*/
+button{
+    width: 100%;
+    height: 4.5rem;
+    margin-bottom: 0rem;
+}
+
+label{
+    color: rgb(0, 0, 0);
+}
+
+
+/* Each item in the left containers grid */
+
+.leftContainer div h2{
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    margin-top: -30px;
+}
+.leftContainer div h4{
+    margin-bottom: 10px;
+    margin-top: -30px;
+}
+
+div .theme{
+    margin-top: 2rem;
+}
+div .draw{
+    margin-top: 2rem;
+}
+
+div .gridSize{
+    margin-bottom: 0px;;
+}
+
+/* Grid Size Slider */
+#gridSlider{
+    width: 100%;
+    cursor: pointer;
+    opacity: .8;
+    margin:-5px;
+}
+
+#gridSlider:hover{
+    opacity: 1;
+}
+.gridSliderValue{
+    grid-area: gridSlider;
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-bottom: 0px;
+    
+}
+
+.themeHeader{
+    grid-area:themeHeader;    
+}
+
+.gridSize{
+    grid-area:gridSize;    
+}
+
+.liteBrightDiv{
+    grid-area:liteBrightDiv;
+}
+
+.resetGrid{
+    grid-area:resetGrid;    
+}
+
+.theme{
+    grid-area:theme;    
+}
+
+.draw{
+    grid-area:draw;    
+}
+
+.slider{
+    grid-area:slider;    
+}
+
+.reset{
+    grid-area:reset;
+}
+
+.gridBorder{
+    grid-area: gridBorder;
+}
+
+
+
+/* The Actual Drawing container*/
+
+.container{
+    border:1px solid rgb(148, 148, 148); 
+    grid-area: container;
+    width: 600px;
+    height: 600px;
+    background: lightgray;
+    display: flex;
+    flex-wrap: wrap;
+    box-shadow: 0 0 0px 10px rgba(59, 59, 59, 0.8), 0 0 1px 8px rgba(255, 255, 255, 0.9);  
+}
+
+.etchGrid{
+
+    background: white;
+    display: inline-block;
+    cursor: pointer;
+    border: inherit; /*1px solid rgb(148, 148, 148); */
+    box-shadow: 0 ;
+}
+
+/* The right options container*/
+
+
+.rightContainer{
+    max-height: 600px;
+    min-width: 313px;
+    background-color: gray;
+    grid-area: rightContainer;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 30px;
+    justify-content: center;
+    grid-template-areas:
+    "colorOptions colorOptions" 
+    "black white"
+    "black white"
+    "random rgb"
+    "random rgb"
+    "darker lighter"
+    "darker lighter"
+    "rgbPicker rgbPicker"
+    "rgbPicker rgbPicker";
+
+}
+
+.rightContainer h1{
+    
+    text-align: center;
+    align-self: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: -1.5rem 0 -3rem 0;
+    padding: 0px;
+    text-shadow: 2px 2px #8f8f8f;
+}
+
+.colorOptions{
+    grid-area: colorOptions;
+}
+
+.black{
+    grid-area:black;    
+}
+
+.white{
+    grid-area:white;    
+}
+
+.random{
+    grid-area: random;
+}
+
+.rgb{
+    grid-area: rgb;
+}
+
+.lighter{
+    grid-area: lighter;
+}
+
+.darker{
+    grid-area: darker;
+}
+/* The grid which contains the custom color creator*/
+
+.rgbPicker{
+    grid-area: rgbPicker;
+    display: grid;
+    grid-gap: 5px;
+    justify-content: center;
+    align-items: center;
+    
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas: 
+    "custom custom custom custom"
+    "redSlider redSlider redSlider rSliderValue"
+    "greenSlider greenSlider greenSlider gSliderValue"
+    "blueSlider blueSlider blueSlider bSliderValue";
+}
+
+.custom{
+    grid-area: custom;
+}
+
+.rSliderValue{    
+    grid-area: rSliderValue;
+    text-align: center;
+    margin: 0px;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color:rgb(230, 0, 0);
+    text-shadow: 1px 1px 3px rgb(0, 0, 0);
+}
+
+.redSlider{
+    grid-area: redSlider;
+    opacity: .8;
+}
+
+.redSlider:disabled{
+    opacity: .2;
+}
+
+.gSliderValue{    
+    grid-area: gSliderValue;
+    text-align: center;
+    margin:0px;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color:rgb(0, 230, 0);
+    text-shadow: 1px 1px 3px rgb(0, 0, 0);
+}
+
+.greenSlider{
+    grid-area:greenSlider;    
+}
+
+.greenSlider:disabled{
+    opacity: .2;
+}
+
+.bSliderValue{    
+    grid-area: bSliderValue;
+    text-align: center;
+    margin: 0px;
+    font-weight: bold;
+    font-size: 1.6rem;
+    color:rgb(0, 0, 230);
+    text-shadow: 1px 1px 3px rgb(0, 0, 0);
+}
+
+.blueSlider{
+    grid-area: blueSlider;
+    
+}
+.blueSlider:disabled{
+    opacity: .2;
+}
+
+
+.container {
+    border-radius: 10px;
+}
+
+.container div:first-child {
+    border-radius: 10px 0px 0px 0px;
+    
+}
+
+.container div:last-child {
+    border-radius: 0px 0px 10px 0px;
+    
+}
+
+/* the "choices" class styles the labels when they are not checked, display none hides the "bubbles" of the radio options*/
+input[type='radio'][name='colorChoiceGroup'] {
+     display:none;
+}
+/*:checked selector and the “adjacent sibling” selector (+ sign).
+this CSS rule applies to any label that immediately follows a checked radio button.*/
+input[type='radio'][name='colorChoiceGroup']:checked + label {
+    background-color: rgb(100, 100, 100);
+    box-shadow: 0 0 0px 4px rgba(41, 41, 41, 0.8), 0 0 1px 6px rgba(173, 173, 173, 0.9);     
+    border:2px solid rgb(112, 112, 112);  
+    color: rgb(218, 218, 218);
+ }
+
